@@ -25,13 +25,13 @@ def diff(rows: Iterator[Sequence[int]]) -> Iterator[list[int]]:
 
 def safe(rows: Iterator[list[int]]) -> Iterator[bool]:
     for row in rows:
-        safe_level = True
+        safe_report = True
         sign = Sign.START
         for diff in row:
-            if not safe_level:
+            if not safe_report:
                 break
             if abs(diff) > 3 or diff == 0:
-                safe_level = False
+                safe_report = False
                 continue
             match sign:
                 case Sign.START if diff < 0:
@@ -39,12 +39,12 @@ def safe(rows: Iterator[list[int]]) -> Iterator[bool]:
                 case Sign.START if diff > 0:
                     sign = Sign.INCREASING
                 case Sign.INCREASING if diff < 0:
-                    safe_level = False
+                    safe_report = False
                     continue
                 case Sign.DECREASING if diff > 0:
-                    safe_level = False
+                    safe_report = False
                     continue
-        yield safe_level
+        yield safe_report
 
 
 @click.group()
@@ -78,6 +78,27 @@ def first(infile: Path, delimiter: str) -> None:
 
     result = sum(result for result in rows)
     click.echo(result)
+
+
+@click.command(short_help="Solution to part 02")
+@click.argument(
+    "infile",
+    type=click.Path(
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        readable=True,
+        writable=False,
+        path_type=Path,
+    ),
+)
+@click.option(
+    "--delimiter",
+    type=click.STRING,
+    help="The delimiter seperating the columns within [INFILE]",
+)
+def second(infile: Path, delimiter: str) -> None:
+    pass
 
 
 cli.add_command(first)
